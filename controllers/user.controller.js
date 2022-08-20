@@ -1,18 +1,12 @@
 const fileService = require("../services/file.service");
 module.exports = {
-    getAllUsers:  async (req, res) => {
+    getAllUsers: async (req, res) => {
         const usersFromService = await fileService.getUsers();
         res.json(usersFromService)
     },
 
     getUserById: async (req, res) => {
-        const {userId} = req.params
-
-        if (Number.isNaN(userId) || userId < 0) {
-            res.status(400).json('Wrong userId');
-            return;
-        }
-
+        const {userId} = req.params;
         const user = await fileService.getUserById(+userId)
 
         if (!user) {
@@ -32,11 +26,6 @@ module.exports = {
     deleteUserById: async (req, res) => {
         const {userId} = req.params
 
-        if (Number.isNaN(userId) || userId < 0) {
-            res.status(400).json('Wrong userId');
-            return;
-        }
-
         const user = await fileService.deleteById(+userId)
 
         if (!user) {
@@ -48,12 +37,7 @@ module.exports = {
 
     updateUserById: async (req, res) => {
         const {userId} = req.params
-        const {age, name} = req.body
-
-        if (Number.isNaN(userId) || userId < 0) {
-            res.status(400).json('Wrong userId');
-            return;
-        }
+        const {age, name} = req.body;
 
         const userData = {};
         if (age) userData.age = age;
