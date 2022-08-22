@@ -1,54 +1,67 @@
-const fileService = require("../services/file.service");
+const {ApiError} = require("../errors");
+const User = require('../dataBase/User');
+const {userService} = require("../services");
+
 module.exports = {
-    getAllUsers: async (req, res) => {
-        const usersFromService = await fileService.getUsers();
-        res.json(usersFromService)
-    },
-
-    getUserById: async (req, res) => {
-        const {userId} = req.params;
-        const user = await fileService.getUserById(+userId)
-
-        if (!user) {
-            res.status(404).json('User not found')
+    getAllUsers: async (req, res, next) => {
+        try {
+            const usersFromService = await User.find();
+            res.json(usersFromService)
+        } catch (e) {
+            next(e);
         }
-
-        res.json(user)
     },
 
-    createUser: async (req, res) => {
-        const {age, name} = req.body;
-        const user = await fileService.insertUser({age, name});
+    getUserById: async (req, res, next) => {
+        try {
+            const {userId} = req.params;
+            const user = await User.findById(userId);
 
-        res.status(201).json(user)
-    },
+            if (!user) {
+                throw new ApiError('User not found', 404)
+                // res.status(404).json('User not found');
+            }
 
-    deleteUserById: async (req, res) => {
-        const {userId} = req.params
-
-        const user = await fileService.deleteById(+userId)
-
-        if (!user) {
-            res.status(404).json('User not found')
+            res.json(user)
+        } catch (e) {
+            next(e);
         }
-
-        res.sendStatus(204)
     },
 
-    updateUserById: async (req, res) => {
-        const {userId} = req.params
-        const {age, name} = req.body;
+    createUser: async (req, res, next) => {
+        try {
+            // const {age, name} = req.body;
+            const user = await userService.createUser(req.body);
 
-        const userData = {};
-        if (age) userData.age = age;
-        if (name) userData.name = name;
-
-        const user = await fileService.updateById(+userId, req.body)
-
-        if (!user) {
-            res.status(404).json('User not found')
+            res.status(201).json(user)
+        } catch (e) {
+            next(e);
         }
+    },
 
-        res.status(201).json(user)
+    deleteUserById: async (req, res, next) => {
+        try {
+            const {userId} = req.params
+
+            await userService.deleteUserById(userId);
+
+            res.sendStatus(204)
+
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    updateUserById: async (req, res, next) => {
+        try {
+            const {userId} = req.params;
+
+            const user = await userService.updateUserById(userId, req.body);
+
+            res.status(201).json(user)
+
+        } catch (e) {
+            next(e);
+        }
     }
 }
