@@ -1,26 +1,24 @@
 const {ApiError} = require("../errors");
+const {userService} = require("../services");
+const User = require('../dataBase/User');
+
 module.exports = {
 
     checkValidUserBody: async (req, res, next) => {
         try {
-        const {age, name} = req.body;
+            const {age, name} = req.body;
 
-        console.log(age, 'age')
-        console.log(name, 'name')
+            if (Number.isNaN(age) || age < 0) {
+                return next(new ApiError('Wrong user age. Age has to be a positive number.', 400));
+            }
 
-        if (Number.isNaN(age) || age < 0) {
-            throw new ApiError('Wrong user age. Age has to be a positive number.', 400)
-            // res.status(400).json('Wrong user age. Age has to be a positive number.');
-            // return;
-        }
+            if (name.length < 3) {
+                return next(new ApiError('Wrong user name. The name has to be longer than 3 symbols.', 418));
 
-        if (name.length < 3){
-            throw new ApiError('Wrong user name. The name has to be longer than 3 symbols.', 418)
+            }
+            next();
 
-        }
-        next();
-
-        }catch (e) {
+        } catch (e) {
             next(e);
         }
     },
@@ -34,6 +32,19 @@ module.exports = {
         next();
     },
 
+    checkUniqueUserEmail: async (req, res, next) => {
+        try {
+            const {email} = req.body;
+            const userByEmail = userService.getUserByParams({email});
 
+            if (userByEmail) {
+                return next(new ApiError('Email already exists', 400));
+            }
+
+            next();
+        } catch (e) {
+            next(e);
+        }
+    }
 
 }

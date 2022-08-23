@@ -5,7 +5,7 @@ const {userService} = require("../services");
 module.exports = {
     getAllUsers: async (req, res, next) => {
         try {
-            const usersFromService = await User.find();
+            const usersFromService = await userService.getAllUsers();
             res.json(usersFromService)
         } catch (e) {
             next(e);
