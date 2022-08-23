@@ -12,9 +12,9 @@ app.use(express.json());
 
 app.use('/users', userRouter);
 
-app.use('*', (req, res, next) => {
-    next(new Error('Route not found'));
-});
+// app.use('*', (req, res, next) => {
+//     next(new Error('Route not found'));
+// });
 
 app.use(mainErrHandler);
 
