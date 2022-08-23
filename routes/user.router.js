@@ -1,7 +1,8 @@
 const {Router} = require('express');
 
 const userController = require('../controllers/user.controller');
-const userMldwr = require('../middlewares/user.middlewares');
+const {userMldwr, commonMldwr} = require('../middlewares');
+// const commonMldwr = require('../middlewares/common.middlewares')
 
 const userRouter = Router();
 
@@ -11,8 +12,19 @@ userRouter.post('/',
     userMldwr.checkUniqueUserEmail,
     userController.createUser)
 
-userRouter.get('/:userId', userMldwr.checkValidUserId, userController.getUserById)
-userRouter.delete('/:userId', userMldwr.checkValidUserId, userController.deleteUserById)
-userRouter.put('/:userId', userMldwr.checkValidUserBody, userController.updateUserById)
+userRouter.get('/:userId',
+    commonMldwr.checkValidUserId('userId'),
+    userMldwr.isUserPresent,
+    userController.getUserById)
+userRouter.delete('/:userId',
+    commonMldwr.checkValidUserId('userId'),
+    userMldwr.isUserPresent,
+    userController.deleteUserById)
+userRouter.put('/:userId',
+    commonMldwr.checkValidUserId('userId'),
+    userMldwr.isUserPresent,
+    userMldwr.checkUniqueUserEmail,
+    userMldwr.checkValidUserBody,
+    userController.updateUserById)
 
 module.exports = userRouter;

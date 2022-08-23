@@ -17,6 +17,10 @@ module.exports = {
         return User.findOne(filter);
     },
 
+    getOneById(id) {
+        return User.findById(id);
+    },
+
     deleteUserById(userId){
         return User.deleteOne({_id: userId})
     }

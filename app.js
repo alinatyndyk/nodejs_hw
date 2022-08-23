@@ -20,5 +20,7 @@ app.use(mainErrHandler);
 
 app.listen(PORT, () => {
     console.log('app server', PORT);
-    mongoose.connect(MONGO_URL);
+    mongoose.connect(MONGO_URL).then(()=>{
+    console.log('connected to database')
+    });
 });

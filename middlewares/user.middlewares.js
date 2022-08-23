@@ -23,23 +23,30 @@ module.exports = {
         }
     },
 
-    checkValidUserId: async (req, res, next) => {
-        const {userId} = req.params;
-
-        if (Number.isNaN(userId) || userId < 0) {
-            throw new ApiError('Wrong userId. Try using a positive number.', 400)
-        }
-        next();
-    },
-
     checkUniqueUserEmail: async (req, res, next) => {
         try {
             const {email} = req.body;
-            const userByEmail = userService.getUserByParams({email});
+            const userByEmail =  await userService.getUserByParams({email});
 
             if (userByEmail) {
-                return next(new ApiError('Email already exists', 400));
+                return next(new ApiError('User with this email already exists', 400));
             }
+
+            next();
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    isUserPresent: async (req, res, next) => {
+        try {
+            const {userId} = req.params;
+            const user =  await userService.getOneById(userId);
+
+            if (!user) {
+                return next(new ApiError('User was not found', 400));
+            }
+            req.user = user;
 
             next();
         } catch (e) {
