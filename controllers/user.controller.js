@@ -1,6 +1,4 @@
-const {ApiError} = require("../errors");
-const User = require('../dataBase/User');
-const {userService} = require("../services");
+const {userService, authService} = require("../services");
 
 module.exports = {
     getAllUsers: async (req, res, next) => {
@@ -15,12 +13,7 @@ module.exports = {
     getUserById: async (req, res, next) => {
         try {
             const {userId} = req.params;
-            const user = await User.findById(userId);
-
-            if (!user) {
-                throw new ApiError('User not found', 404)
-                // res.status(404).json('User not found');
-            }
+            const user = await userService.getOneById(userId);
 
             res.json(user)
         } catch (e) {
@@ -30,8 +23,9 @@ module.exports = {
 
     createUser: async (req, res, next) => {
         try {
+            const hashPassword = await authService.hashPassword(req.body.password)
             // const {age, name} = req.body;
-            const user = await userService.createUser(req.body);
+            const user = await userService.createUser({...req.body, password: hashPassword});
 
             res.status(201).json(user)
         } catch (e) {
@@ -57,8 +51,9 @@ module.exports = {
             const {userId} = req.params;
 
             const user = await userService.updateUserById(userId, req.body);
+            const userBody = await userService.getOneById(userId);
 
-            res.status(201).json(user)
+            res.status(201).json(userBody);
 
         } catch (e) {
             next(e);

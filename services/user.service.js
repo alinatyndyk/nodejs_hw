@@ -18,7 +18,7 @@ module.exports = {
     },
 
     getOneById(id) {
-        return User.findById(id);
+        return User.findById(id).select(['+cars']).populate('cars');
     },
 
     deleteUserById(userId){

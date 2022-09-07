@@ -26,10 +26,12 @@ module.exports = {
     checkUniqueUserEmail: async (req, res, next) => {
         try {
             const {email} = req.body;
-            const userByEmail =  await userService.getUserByParams({email});
+            const {userId} = req.params;
+            const userByEmail = await userService.getUserByParams({email});
 
-            if (userByEmail) {
-                return next(new ApiError('User with this email already exists', 400));
+
+            if (userByEmail && userByEmail._id.toString() !== userId) {
+                return next(new ApiError('User with this email already exists', 409));
             }
 
             next();
@@ -38,10 +40,26 @@ module.exports = {
         }
     },
 
-    isUserPresent: async (req, res, next) => {
+    isUserPresent: (from = 'params') => async (req, res, next) => {
         try {
-            const {userId} = req.params;
-            const user =  await userService.getOneById(userId);
+            const {userId} = req[from];
+            const user = await userService.getOneById(userId);
+
+            if (!user) {
+                return next(new ApiError('User was not found', 400));
+            }
+            req.user = user;
+
+            next();
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    getUserDynamically: (from = 'body', fieldName = 'userId', dbField = fieldName) => async (req, res, next) => {
+        try {
+            const fieldToSearch = req[from][fieldName];
+            const user = await User.findOne({[dbField]: fieldToSearch})
 
             if (!user) {
                 return next(new ApiError('User was not found', 400));
