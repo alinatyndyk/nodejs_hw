@@ -9,7 +9,7 @@ module.exports = {
         try {
             const validate = userValidators.newUserValidator.validate(req.body)
             if(validate.error){
-                return next(new ApiError(validate.error.details[0].message, 400))
+                return next(new ApiError(`${validate.error}`, 400))
             }
             next();
         } catch (e) {
@@ -21,10 +21,10 @@ module.exports = {
         try {
             const {email} = req.body;
             const {userId} = req.params;
-            const userByEmail = await userService.getUserByParams({email, _id: {ne$: userId}});
+            const userByEmail = await userService.getUserByParams({email, _id: { $ne: userId }});
 
 
-            if (userByEmail) {
+            if (userByEmail ) {
                 return next(new ApiError('User with this email already exists', 409));
             }
 
