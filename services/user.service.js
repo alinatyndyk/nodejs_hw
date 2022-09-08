@@ -10,7 +10,7 @@ module.exports = {
     },
 
     updateUserById(userId, newUserObject) {
-        return User.updateOne({_id: userId}, newUserObject, {new: true})
+        return User.findOneAndUpdate({_id: userId}, newUserObject, {new: true})
     },
 
     getUserByParams(filter) {
