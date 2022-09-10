@@ -1,6 +1,6 @@
 const {ApiError} = require("../errors");
-const {carService, authService, tokenService} = require("../services");
-const {constant, tokenType} = require("../constants")
+const {authService, tokenService} = require("../services");
+const {constant} = require("../constants")
 const tokenTypeEnum = require("../constants/tokenType.enum");
 
 module.exports = {
@@ -10,7 +10,7 @@ module.exports = {
 
             const access_token = req.get(constant.AUTHORIZATION)
 
-            if(!access_token){
+            if (!access_token) {
                 return next(new ApiError('No token', 401))
             }
 
@@ -18,7 +18,7 @@ module.exports = {
 
             const tokenInfo = authService.getOneWithUser({access_token})
 
-            if(!tokenInfo){
+            if (!tokenInfo) {
                 return next(new ApiError('No valid token', 401))
             }
             req.tokenInfo = tokenInfo;
@@ -34,7 +34,7 @@ module.exports = {
 
             const refresh_token = req.get(constant.AUTHORIZATION)
 
-            if(!refresh_token){
+            if (!refresh_token) {
                 return next(new ApiError('No token', 401))
             }
 
@@ -42,7 +42,7 @@ module.exports = {
 
             const tokenInfo = await authService.getOneByParams({refresh_token});
 
-            if(!tokenInfo){
+            if (!tokenInfo) {
                 return next(new ApiError('No valid token', 401))
             }
 

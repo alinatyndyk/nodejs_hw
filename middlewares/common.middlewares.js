@@ -1,6 +1,5 @@
 const {isObjectIdOrHexString} = require("mongoose");
 const {ApiError} = require("../errors");
-const {userService} = require("../services");
 
 module.exports = {
 
@@ -11,6 +10,19 @@ module.exports = {
             }
             next();
 
+        } catch (e) {
+            next(e);
+        }
+    },
+
+    checkValidBody: (validatorType) => async (req, res, next) => {
+        try {
+            const validate = validatorType.validate(req.body)
+            if (validate.error) {
+                return next(new ApiError(`${validate.error}`, 400))
+            }
+            req.body = validate.value;
+            next();
         } catch (e) {
             next(e);
         }

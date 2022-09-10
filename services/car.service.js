@@ -10,8 +10,8 @@ module.exports = {
         return Car.updateOne({_id: carId}, newCarObject, {new: true})
     },
 
-    getCarByParams(filter) {
-        return Car.findOne(filter);
+    getCarsByParams(filter) {
+        return Car.find(filter);
     },
 
     getOneById(id) {
