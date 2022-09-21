@@ -2,7 +2,8 @@ const {Router} = require('express');
 
 const {authController} = require('../controllers');
 const {userMldwr, authMldwr, commonMldwr} = require('../middlewares');
-const {loginUserValidator} = require("../validators/user.validators");
+const {loginUserValidator, userPasswordValidator, userEmailValidator} = require("../validators/user.validators");
+const tokenTypeEnum = require("../constants/tokenType.enum");
 
 const authRouter = Router();
 
@@ -19,6 +20,19 @@ authRouter.post('/refresh',
 authRouter.post('/logout',
     authMldwr.checkIsAccessTokenValid,
     authController.Logout
+)
+
+authRouter.post('/password/forgot',
+    commonMldwr.checkValidBody(userEmailValidator),
+    userMldwr.getUserDynamically('body', 'email', 'email'),
+    authController.ForgotPassword
+)
+
+authRouter.put('/password/forgot',
+    commonMldwr.checkValidBody(userPasswordValidator),
+    authMldwr.checkIsActionTokenValid(tokenTypeEnum.FORGOT_PASSWORD),
+    authMldwr.checkPreviousPassword,
+    authController.SetNewPassword
 )
 
 module.exports = authRouter;

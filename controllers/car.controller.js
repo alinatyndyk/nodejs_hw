@@ -18,10 +18,10 @@ module.exports = {
         try {
             const {_id} = req.tokenInfo.user;
             const car = await carService.createCar({...req.body, user: _id});
-
+            console.log('car controller', car);
             const userCars = await carService.getCarsByParams({user: _id});
             await userService.updateUserById(_id, {cars: [...userCars, car._id]});
-
+            console.log(userCars, 'userCars carController')
             res.status(201).json(car)
         } catch (e) {
             next(e);

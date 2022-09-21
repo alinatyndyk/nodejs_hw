@@ -21,6 +21,7 @@ module.exports = {
             if (validate.error) {
                 return next(new ApiError(`${validate.error}`, 400))
             }
+            console.log(req.body, 'common middle');
             req.body = validate.value;
             next();
         } catch (e) {

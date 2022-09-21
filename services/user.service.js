@@ -5,10 +5,6 @@ module.exports = {
         return User.find(filter);
     },
 
-    createUser(userObject) {
-        return User.create(userObject)
-    },
-
     updateUserById(userId, newUserObject) {
         return User.findOneAndUpdate({_id: userId}, newUserObject, {new: true})
     },
